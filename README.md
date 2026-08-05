@@ -1,4 +1,4 @@
-# @paladini/lighterpack
+# lighterpack-sdk
 
 [![CI](https://github.com/paladini/lighterpack-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/paladini/lighterpack-sdk/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/%40paladini%2Flighterpack.svg)](https://www.npmjs.com/package/@paladini/lighterpack)
