@@ -241,4 +241,79 @@ describe('LighterPackClient (SDK, against a fake in-memory server)', () => {
     const updated = await lp.items.uploadImage(item.itemId, { buffer: Buffer.from('fake'), filename: 'x.jpg', mimeType: 'image/jpeg' });
     expect(updated.imageUrl).toBe('/userimages/fake.webp');
   });
+
+  it('account settings (unit/currency) persist, and refresh() re-syncs the cache', async () => {
+    await lp.account.setTotalUnit('kg');
+    await lp.account.setItemUnit('lb');
+    await lp.account.setCurrencySymbol('R$');
+    await lp.account.refresh();
+    const info = await lp.account.get();
+    expect(info).toMatchObject({ totalUnit: 'kg', itemUnit: 'lb', currencySymbol: 'R$' });
+  });
+
+  it('lists.copy duplicates categories and shares the same items; lists.delete removes a non-last list', async () => {
+    const original = await lp.lists.create({ name: 'Original' });
+    const cat = await lp.categories.add(original.listId, { name: 'Cat' });
+    await lp.items.add(cat.categoryId, { name: 'Shared' });
+
+    const copy = await lp.lists.copy(original.listId, 'Copy!');
+    expect(copy.name).toBe('Copy!');
+    const copyDetail = await lp.lists.get(copy.listId);
+    expect(copyDetail.categories[0]!.items.map((i) => i.name)).toEqual(['Shared']);
+
+    await lp.lists.delete(copy.listId);
+    await expect(lp.lists.get(copy.listId)).rejects.toThrow();
+  });
+
+  it('lists.delete throws when it is the only remaining list', async () => {
+    const lists = await lp.lists.list();
+    for (const list of lists.slice(1)) {
+      await lp.lists.delete(list.listId);
+    }
+    const remaining = await lp.lists.list();
+    expect(remaining).toHaveLength(1);
+    await expect(lp.lists.delete(remaining[0]!.listId)).rejects.toThrow();
+  });
+
+  it('categories.rename, setColor, and reorder all persist', async () => {
+    const list = await lp.lists.create({});
+    const first = await lp.categories.add(list.listId, { name: 'First' });
+    const second = await lp.categories.add(list.listId, { name: 'Second' });
+
+    await lp.categories.rename(first.categoryId, 'Renamed');
+    await lp.categories.setColor(second.categoryId, '#00ff00');
+    await lp.categories.reorder(list.listId, [second.categoryId, first.categoryId]);
+
+    const detail = await lp.lists.get(list.listId);
+    expect(detail.categories.map((c) => c.categoryId)).toEqual([second.categoryId, first.categoryId]);
+    expect(detail.categories.find((c) => c.categoryId === first.categoryId)?.name).toBe('Renamed');
+    expect(detail.categories.find((c) => c.categoryId === second.categoryId)?.color).toBe('#00ff00');
+  });
+
+  it('items.removeFromCategory unlinks without deleting the item row; setImageUrl sets an external URL', async () => {
+    const list = await lp.lists.create({});
+    const cat = await lp.categories.add(list.listId, { name: 'Cat' });
+    const item = await lp.items.add(cat.categoryId, { name: 'Solo' });
+
+    await lp.items.setImageUrl(item.itemId, 'https://example.com/photo.jpg');
+    await lp.items.removeFromCategory(cat.categoryId, item.itemId);
+
+    const detail = await lp.lists.get(list.listId);
+    expect(detail.categories.find((c) => c.categoryId === cat.categoryId)?.items).toHaveLength(0);
+  });
+
+  it('items.setQuantity/incrementQuantity/decrementQuantity all work and floor at 0', async () => {
+    const list = await lp.lists.create({});
+    const cat = await lp.categories.add(list.listId, { name: 'Cat' });
+    const item = await lp.items.add(cat.categoryId, { name: 'Widget', qty: 1 });
+
+    const afterSet = await lp.items.setQuantity(cat.categoryId, item.itemId, 5);
+    expect(afterSet.qty).toBe(5);
+
+    const afterInc = await lp.items.incrementQuantity(cat.categoryId, item.itemId, 2);
+    expect(afterInc.qty).toBe(7);
+
+    const afterDec = await lp.items.decrementQuantity(cat.categoryId, item.itemId, 100);
+    expect(afterDec.qty).toBe(0);
+  });
 });
