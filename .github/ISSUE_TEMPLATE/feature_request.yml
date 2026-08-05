@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose new API surface or a change to existing methods
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do that isn't currently possible?
+      description: What LighterPack capability or workflow is missing from the SDK?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      description: Suggested method signature(s) and namespace, if you have an idea.
+      render: typescript
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Workarounds you're using today
+    validations:
+      required: false

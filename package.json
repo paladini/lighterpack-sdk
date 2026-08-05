@@ -1,0 +1,68 @@
+{
+  "name": "@paladini/lighterpack",
+  "version": "0.1.0",
+  "description": "A lightweight, modern TypeScript SDK for the LighterPack API — manage packing lists, categories, and items in code.",
+  "type": "module",
+  "license": "MIT",
+  "author": "",
+  "homepage": "https://github.com/paladini/lighterpack-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paladini/lighterpack-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/paladini/lighterpack-sdk/issues"
+  },
+  "keywords": [
+    "lighterpack",
+    "sdk",
+    "api-client",
+    "packing-list",
+    "gear-list",
+    "backpacking",
+    "ultralight",
+    "typescript"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run tests/unit",
+    "test:watch": "vitest",
+    "test:integration": "vitest run tests/integration",
+    "verify-live-login": "tsx scripts/verify-live-login.ts",
+    "changeset": "changeset",
+    "release": "changeset publish"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@changesets/cli": "^2.27.11",
+    "@eslint/js": "^9.18.0",
+    "@types/node": "^22.10.5",
+    "eslint": "^9.18.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.19.1",
+    "vitest": "^3.0.4"
+  }
+}
