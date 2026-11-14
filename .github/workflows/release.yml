@@ -10,6 +10,7 @@ permissions:
   contents: write
   pull-requests: write
   packages: write
+  id-token: write
 
 jobs:
   release:
@@ -65,3 +66,15 @@ jobs:
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync jsr.json version and publish to JSR
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
+          const jsr = JSON.parse(fs.readFileSync('jsr.json', 'utf8'));
+          jsr.version = version;
+          fs.writeFileSync('jsr.json', `${JSON.stringify(jsr, null, 2)}\n`);
+          NODE
+          npx -y jsr publish --allow-slow-types

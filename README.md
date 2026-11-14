@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/paladini/lighterpack-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/paladini/lighterpack-sdk/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/%40paladini%2Flighterpack.svg)](https://www.npmjs.com/package/@paladini/lighterpack)
+[![JSR](https://jsr.io/badges/@paladini/lighterpack)](https://jsr.io/@paladini/lighterpack)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node >=20](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](package.json)
 
@@ -11,8 +12,20 @@ A lightweight, modern TypeScript SDK for [LighterPack](https://lighterpack.com) 
 
 ## Install
 
+**npm** (Node.js):
+
 ```bash
 npm install @paladini/lighterpack
+```
+
+**JSR** (Deno, Bun, or Node via `jsr:`):
+
+```bash
+npx jsr add @paladini/lighterpack
+```
+
+```ts
+import { LighterPackClient } from '@paladini/lighterpack';
 ```
 
 ## Quick start
